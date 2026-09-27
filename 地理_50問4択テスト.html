@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>地理 50問4択テスト</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#eef3f8;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;color:#243447}
+.wrap{max-width:600px;margin:auto;padding:16px}
+h1{text-align:center;font-size:24px;margin:8px 0 14px}
+.top{background:#fff;border-radius:14px;padding:12px 16px;margin-bottom:14px;box-shadow:0 2px 8px #0001}
+.progress{height:9px;background:#e3e8ee;border-radius:99px;overflow:hidden;margin-top:8px}
+.bar{height:100%;width:2%;background:#3498db;transition:.25s}
+.card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 3px 12px #0002}
+.qnum{font-size:14px;color:#667085;font-weight:bold}
+.question{font-size:19px;font-weight:bold;line-height:1.55;margin:10px 0 18px}
+.choice{width:100%;padding:14px 12px;margin:7px 0;border:0;border-radius:11px;background:#3498db;color:#fff;font-size:16px;text-align:left}
+.choice:disabled{opacity:1}
+.correct{background:#2ecc71!important}
+.wrong{background:#e74c3c!important}
+.result{font-size:17px;font-weight:bold;margin-top:14px;min-height:26px}
+.next{display:none;width:100%;padding:14px;border:0;border-radius:11px;background:#34495e;color:#fff;font-size:17px;font-weight:bold;margin-top:12px}
+.final{text-align:center;background:#fff;border-radius:16px;padding:28px 18px;box-shadow:0 3px 12px #0002}
+.big{font-size:34px;font-weight:bold;margin:12px}
+.restart{padding:13px 22px;border:0;border-radius:10px;background:#9b59b6;color:#fff;font-size:17px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>🌏 地理 4択テスト</h1>
+<div class="top">
+<div><b id="count">1 / 50</b>　得点：<b id="score">0</b></div>
+<div class="progress"><div class="bar" id="bar"></div></div>
+</div>
+<div id="app"></div>
+</div>
+<script>
+const quizData=[
+["南極大陸やグリーンランドなど、大陸全体を広く覆う大規模な氷河を何というか？","氷床"],
+["山岳地域の斜面に見られる氷河を何というか？","山岳氷河"],
+["氷河によって運ばれた岩くずが堆積して形成された地形を何というか？","モレーン"],
+["乾燥地域で見られる、浸食・風化によってできたテーブル状の台地を何というか？","メサ（ビュート）"],
+["浅海でサンゴ虫の死骸が堆積して作られる地形を何というか？","サンゴ礁"],
+["海岸線に直接接しているサンゴ礁を何というか？","裾礁"],
+["陸地とサンゴ礁の間に礁湖（ラグーン）をもつサンゴ礁を何というか？","堡礁"],
+["環状に広がるサンゴ礁を何というか？","環礁"],
+["石灰岩が雨水などの溶食によって形成される地形を何というか？","カルスト地形"],
+["カルスト地形で、雨水の溶食によってできるすり鉢状の凹地を何というか？","ドリーネ"],
+["気候を特徴づける「気温・降水量・風向・風速・湿度」などの要素を何というか？","気候要素"],
+["緯度・標高・海陸分布・地形・海流など、気候要素に影響を与える要因を何というか？","気候因子"],
+["赤道付近で形成され、上昇気流によって降水量が多くなる気圧帯を何というか？","熱帯収束帯（赤道低圧帯）"],
+["緯度20〜25度付近に位置し、下降気流により乾燥する気圧帯を何というか？","亜熱帯高圧帯"],
+["亜熱帯高圧帯から低緯度（赤道）に向かって吹く恒常風を何というか？","貿易風"],
+["亜熱帯高圧帯から高緯度側に向かって吹く恒常風を何というか？","偏西風"],
+["極高圧帯から吹いてくる風を何というか？","極東風"],
+["偏西風と極東風がぶつかる場所で発生する前線を何というか？","寒帯前線"],
+["高圧帯に入ると乾季、低圧帯に入ると雨季になる原因となるものは何か？","気圧帯の南北移動"],
+["夏と冬で風向がほぼ逆になる風を何というか？","季節風（モンスーン）"],
+["低緯度から高緯度へ向かって流れる熱エネルギーを運ぶ海流を何というか？","暖流"],
+["高緯度から低緯度へ向かって流れる冷たい海流を何というか？","寒流"],
+["海洋の影響を強く受け、気温の日較差や年較差が小さい気候を何というか？","海洋性気候"],
+["内陸部で海からの風が届きにくく、気温の変動が大きい気候を何というか？","大陸性気候"],
+["ヨーロッパが高緯度でありながら比較的温暖な原因となる暖流は何か？","北大西洋海流"],
+["ある地域に共存している植物の集団を何というか？","植生"],
+["樹木が生育できる条件を満たす気候を総称して何というか？","樹林気候"],
+["寒さや乾燥のために樹木が生育できない気候を総称して何というか？","無樹林気候"],
+["ケッペンの気候区分で、最寒月平均気温18℃以上の熱帯を表す記号は何か？","A"],
+["無樹林気候のうち、乾燥帯を表す記号は何か？","B"],
+["一年中高温多湿で、熱帯雨林が広がる気候区（Af）を何というか？","熱帯雨林気候"],
+["熱帯雨林気候の周辺に見られる、弱い乾季のある気候（Am）を何というか？","熱帯モンスーン気候"],
+["雨季と乾季がはっきり分かれ、長草サバナが広がる気候（Aw）を何というか？","サバナ気候"],
+["熱帯地域でよく見られる、鉄分を多く含み酸性で赤い土壌を何というか？","ラトソル"],
+["熱帯で多く行われている、特定の単一作物を大規模に栽培する農園農業は？","プランテーション"],
+["年降水量が極めて少なく、砂漠が広がる気候（BW）を何というか？","砂漠気候"],
+["砂漠気候の周辺に分布し、短い草が生える気候（BS）を何というか？","ステップ気候"],
+["乾燥地域で、降雨時以外には水が流れない干上がった川を何というか？","ワジ（枯れ川）"],
+["湿潤地域や山岳氷河から流入する、乾燥地域を貫流する河川を何というか？","外来河川"],
+["ステップ気候の地域で行われている移動式の牧畜形態を何というか？","遊牧"],
+["夏は高温・乾燥、冬は雨が多い気候（Cs）を何というか？","地中海性気候"],
+["西ヨーロッパなどにみられ、年中湿潤で気温の年較差が小さい気候（Cfb）は？","西岸海洋性気候"],
+["夏は高温多湿、冬は乾燥する日本の大半が該当する気候（Cfa）は？","温暖湿潤気候"],
+["日本の温帯地域によく見られる、葉に光沢がある常緑広葉樹を何というか？","照葉樹"],
+["1年に同じ耕地で2回作物を栽培することを何というか？","二期作"],
+["亜寒帯（冷帯）に広く分布する、大規模な針葉樹林帯を何というか？","タイガ"],
+["亜寒帯の地下深くに見られる、一年中凍結したままの土壌を何というか？","永久凍土"],
+["寒帯のうち、短い夏に苔類や地衣類が育つ気候（ET）を何というか？","ツンドラ気候"],
+["一年中雪と氷に覆われている極めて厳しい気候（EF）を何というか？","氷雪気候"],
+["高緯度地域で、夏に太陽が沈まない現象を何というか？","白夜"]
+].map(x=>({q:x[0],a:x[1]}));
+let current=0,score=0,answered=false;
+const app=document.getElementById("app");
+function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+function render(){
+ answered=false; const item=quizData[current];
+ let choices=shuffle([item.a,...shuffle(quizData.filter((_,i)=>i!==current)).slice(0,3).map(x=>x.a)]);
+ document.getElementById("count").textContent=`${current+1} / 50`;
+ document.getElementById("score").textContent=score;
+ document.getElementById("bar").style.width=((current+1)/50*100)+"%";
+ app.innerHTML=`<div class="card"><div class="qnum">第${current+1}問</div><div class="question">${item.q}</div>
+ ${choices.map((x,i)=>`<button class="choice" data-choice="${encodeURIComponent(x)}">${["①","②","③","④"][i]} ${x}</button>`).join("")}
+ <div class="result" id="result"></div><button class="next" id="next">${current===49?"結果を見る":"次の問題 →"}</button></div>`;
+ app.querySelectorAll(".choice").forEach(b=>b.onclick=()=>answer(b,decodeURIComponent(b.dataset.choice)));
+}
+function answer(button,selected){
+ if(answered)return; answered=true; const item=quizData[current];
+ const buttons=app.querySelectorAll(".choice"); buttons.forEach(b=>b.disabled=true);
+ const result=document.getElementById("result");
+ if(selected===item.a){score++;button.classList.add("correct");result.textContent="⭕ 正解！";result.style.color="#27ae60";}
+ else{button.classList.add("wrong");result.textContent=`❌ 不正解！ 正解は「${item.a}」`;result.style.color="#e74c3c";buttons.forEach(b=>{if(decodeURIComponent(b.dataset.choice)===item.a)b.classList.add("correct")});}
+ document.getElementById("score").textContent=score; document.getElementById("next").style.display="block";
+}
+app.addEventListener("click",e=>{if(e.target.id==="next"){current++;if(current<50)render();else finish();}});
+function finish(){const percent=Math.round(score/50*100);app.innerHTML=`<div class="final"><div>🎉 テスト終了！</div><div class="big">${score} / 50</div><div>正答率：${percent}%</div><br><button class="restart" onclick="location.reload()">もう一度挑戦する</button></div>`;document.getElementById("count").textContent="終了";document.getElementById("bar").style.width="100%";}
+render();
+</script>
+</body>
+</html>
